@@ -11,7 +11,7 @@ using TripperAPI.Services;
 namespace TripperAPI.Controllers
 {
     [Route("api/place")]
-    public class PlaceController : ControllerBase   
+    public class PlaceController : ControllerBase
     {
         private readonly IPlaceService _service;
 
@@ -26,6 +26,27 @@ namespace TripperAPI.Controllers
         {
             var places = await _service.GetAll();
             return Ok(places);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PlaceDto>> GetSinglePlace(int id)
+        {
+            var place = await _service.GetSinglePlaceById(id);
+            return Ok(place);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<CreatePlaceDto>> CreateNewPlace([FromBody] CreatePlaceDto dto)
+        {
+            int resultId = await _service.CreateNewPlace(dto);
+            return Created($"api/place/{resultId}",null);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePlaceById(int id)
+        {
+            await _service.DeleteSinglePlaceById(id);
+            return NoContent();
         }
     }
 }
