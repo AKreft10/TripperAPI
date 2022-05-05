@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
+using TripperAPI.Middleware;
 using TripperAPI.Services;
 
 namespace TripperAPI
@@ -28,6 +29,7 @@ namespace TripperAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(this.GetType().Assembly);
+            services.AddScoped<ExceptionMiddleware>();
             services.AddDbContext<DatabaseContext>();
             services.AddScoped<DbSeeder>();
             services.AddScoped<IPlaceService, PlaceService>();
@@ -42,6 +44,7 @@ namespace TripperAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 

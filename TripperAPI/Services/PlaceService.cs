@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
+using TripperAPI.Middleware.Exceptions;
 using TripperAPI.Models;
 
 namespace TripperAPI.Services
@@ -29,6 +30,12 @@ namespace TripperAPI.Services
                 .Include(r => r.Reviews)
                 .ThenInclude(p => p.Photos)
                 .ToListAsync();
+
+
+            if(places is null)
+            {
+                throw new NotFound("No places here ):");
+            }
 
             var result = _mapper.Map<List<PlaceDto>>(places);
 
