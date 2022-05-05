@@ -1,23 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
+using TripperAPI.Models;
 
 namespace TripperAPI.Services
 {
     public class PlaceService : IPlaceService
     {
         private readonly DatabaseContext _context;
+        private readonly IMapper _mapper;
 
-        public PlaceService(DatabaseContext context)
+        public PlaceService(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<Place>> GetAll()
+        public async Task<List<PlaceDto>> GetAll()
         {
             var places = await _context
                 .Places
@@ -26,7 +30,9 @@ namespace TripperAPI.Services
                 .ThenInclude(p => p.Photos)
                 .ToListAsync();
 
-            return places;
+            var result = _mapper.Map<List<PlaceDto>>(places);
+
+            return result;
         }
     }
 }

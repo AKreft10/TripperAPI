@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
+using TripperAPI.Models;
 using TripperAPI.Services;
 
 namespace TripperAPI.Controllers
@@ -21,7 +22,7 @@ namespace TripperAPI.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Place>>> GetAll()
+        public async Task<ActionResult<List<PlaceDto>>> GetAll()
         {
             var places = await _service.GetAll();
             return Ok(places);
