@@ -33,6 +33,7 @@ namespace TripperAPI
             services.AddDbContext<DatabaseContext>();
             services.AddScoped<DbSeeder>();
             services.AddScoped<IPlaceService, PlaceService>();
+            services.AddScoped<IReviewService, ReviewService>();
             services.AddControllers();
         }
 

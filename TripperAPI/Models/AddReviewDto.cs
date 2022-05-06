@@ -7,13 +7,11 @@ using TripperAPI.Entities;
 
 namespace TripperAPI.Models
 {
-    public class ReviewDto
+    public class AddReviewDto
     {
-        public int Id { get; set; }
         public string Content { get; set; }
         public string Author { get; set; }
         public int Rating { get; set; }
-        public DateTime Created { get; set; }
-        public List<PhotoDto> Photos { get; set; }
+        public List<Photo> Photos { get; set; }
     }
 }
