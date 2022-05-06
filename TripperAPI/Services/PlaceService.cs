@@ -84,5 +84,29 @@ namespace TripperAPI.Services
 
             return result;
         }
+
+        public async Task UpdateSinglePlaceById(int id, UpdatePlaceDto dto)
+        {
+            var place = await _context
+                .Places
+                .Include(a => a.Address)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (place is null)
+                throw new NotFound("Place not found, nothing to edit here ):");
+
+            place.Name = dto.Name;
+            place.Description = dto.Description;
+
+            place.Address.Continent = dto.Continent;
+            place.Address.Country = dto.Country;
+            place.Address.City = dto.City;
+            place.Address.PostalCode = dto.PostalCode;
+            place.Address.Street = dto.Street;
+            place.Address.Latitude = dto.Latitude;
+            place.Address.Longitude = dto.Longitude;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

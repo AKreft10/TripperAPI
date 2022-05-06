@@ -48,5 +48,12 @@ namespace TripperAPI.Controllers
             await _service.DeleteSinglePlaceById(id);
             return NoContent();
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdatePlace(int id, [FromBody]UpdatePlaceDto dto)
+        {
+            await _service.UpdateSinglePlaceById(id, dto);
+            return Ok();
+        }
     }
 }
