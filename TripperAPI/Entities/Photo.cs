@@ -12,5 +12,7 @@ namespace TripperAPI.Entities
         public string Url { get; set; }
         public string Author { get; set; }
         public bool GalleryMember { get; set; }
+        public int ReviewId { get; set; }
+        public Review Review { get; set; }
     }
 }
