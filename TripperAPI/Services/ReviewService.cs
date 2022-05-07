@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,20 @@ namespace TripperAPI.Services
     {
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<ReviewService> _logger;
 
-        public ReviewService(DatabaseContext context, IMapper mapper)
+        public ReviewService(DatabaseContext context, IMapper mapper, ILogger<ReviewService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task AddReviewToPlaceById(int placeId, AddReviewDto dto)
         {
+            _logger.LogInformation($"Review with id: {placeId} ADD method invoked.");
+
+
             await _context.Reviews.AddAsync(new Review
             {
                 Content = dto.Content,
@@ -45,6 +51,8 @@ namespace TripperAPI.Services
 
         public async Task DeleteReviewByReviewId(int reviewId)
         {
+            _logger.LogInformation($"Review with id: {reviewId} DELETE method invoked.");
+
             var review = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
 
             if (review is null)
@@ -56,6 +64,8 @@ namespace TripperAPI.Services
 
         public async Task EditReviewByReviewId(int reviewId, UpdateReviewDto dto)
         {
+            _logger.LogInformation($"Review with id: {reviewId} UPDATE method invoked.");
+
             var review = await _context.Reviews
                 .FirstOrDefaultAsync(x => x.Id == reviewId);
 

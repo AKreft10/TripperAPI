@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,24 +16,32 @@ namespace TripperAPI.Services
     {
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public PlaceService(DatabaseContext context, IMapper mapper)
+        public PlaceService(DatabaseContext context, IMapper mapper, ILogger<PlaceService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<int> CreateNewPlace(CreatePlaceDto dto)
         {
+
             var place = _mapper.Map<Place>(dto);
             await _context.AddAsync(place);
             await _context.SaveChangesAsync();
 
+
+            _logger.LogInformation($"Created new place, ID: {place.Id}, NAME: {place.Name}");
             return place.Id;
         }
 
         public async Task DeleteSinglePlaceById(int id)
         {
+            _logger.LogInformation($"Place with id: {id} DELETE method invoked.");
+
+
             var place = await _context
                 .Places
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -87,6 +96,8 @@ namespace TripperAPI.Services
 
         public async Task UpdateSinglePlaceById(int id, UpdatePlaceDto dto)
         {
+            _logger.LogInformation($"Place with id: {id} UPDATE method invoked");
+
             var place = await _context
                 .Places
                 .Include(a => a.Address)
