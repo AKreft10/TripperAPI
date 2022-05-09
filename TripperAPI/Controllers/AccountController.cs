@@ -26,5 +26,12 @@ namespace TripperAPI.Controllers
             _service.RegisterUser(dto);
             return Ok();
         }
+
+        [HttpPost("login")]
+        public ActionResult Login([FromBody]LoginDto dto)
+        {
+            string token = _service.GenerateJwt(dto);
+            return Ok(token);
+        }
     }
 }

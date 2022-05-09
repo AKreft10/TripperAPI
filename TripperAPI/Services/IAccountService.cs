@@ -10,5 +10,6 @@ namespace TripperAPI.Services
     public interface IAccountService
     {
         Task RegisterUser(RegisterNewUserDto dto);
+        string GenerateJwt(LoginDto dto);
     }
 }

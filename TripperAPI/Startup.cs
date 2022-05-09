@@ -9,9 +9,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
 using TripperAPI.Middleware;
@@ -33,6 +35,27 @@ namespace TripperAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var authConfiguration = new AuthConfiguration();
+
+            Configuration.GetSection("Authentication").Bind(authConfiguration);
+            services.AddSingleton(authConfiguration);
+            services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = "Bearer";
+                option.DefaultScheme = "Bearer";
+                option.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer(config =>
+            {
+                config.RequireHttpsMetadata = false;
+                config.SaveToken = true;
+                config.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = authConfiguration.JwtIssuer,
+                    ValidAudience = authConfiguration.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfiguration.JwtKey)),
+                };
+            });
+
             services.AddControllers().AddFluentValidation();
             services.AddAutoMapper(this.GetType().Assembly);
             services.AddScoped<ExceptionMiddleware>();
@@ -56,7 +79,7 @@ namespace TripperAPI
                 app.UseDeveloperExceptionPage();
             }
             app.UseMiddleware<ExceptionMiddleware>();
-
+            app.UseAuthentication();
             app.UseHttpsRedirection();
 
             app.UseSwagger();

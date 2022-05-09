@@ -16,10 +16,20 @@ namespace TripperAPI.Middleware
             {
                 await next.Invoke(context);
             }
+            catch(BadRequest badRequestException)
+            {
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsync(badRequestException.Message);
+            }
             catch(NotFound notFoundException)
             {
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
+            }
+            catch(Exception)
+            {
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsync("Something went wrong...");
             }
 
         }
