@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +15,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
 using TripperAPI.Middleware;
+using TripperAPI.Models;
+using TripperAPI.Models.ValidatorModels;
 using TripperAPI.Services;
 
 namespace TripperAPI
@@ -29,6 +33,7 @@ namespace TripperAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers().AddFluentValidation();
             services.AddAutoMapper(this.GetType().Assembly);
             services.AddScoped<ExceptionMiddleware>();
             services.AddDbContext<DatabaseContext>();
@@ -37,6 +42,7 @@ namespace TripperAPI
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            services.AddScoped<IValidator<RegisterNewUserDto>, RegisterUserDtoValidator>();
             services.AddSwaggerGen();
             services.AddControllers();
         }
