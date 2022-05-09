@@ -26,6 +26,13 @@ namespace TripperAPI
                     _context.Places.AddRange(places);
                     _context.SaveChanges();
                 }
+
+                if(!_context.Roles.Any())
+                {
+                    var roles = GetRoles();
+                    _context.Roles.AddRange(roles);
+                    _context.SaveChanges();
+                }
             }
         }
 
@@ -86,8 +93,30 @@ namespace TripperAPI
                     }
                 }
             };
-
             return places;
+
+        }
+
+        private IEnumerable<Role> GetRoles()
+        {
+            var roles = new List<Role>()
+                {
+                    new Role()
+                    {
+                        Name = "User"
+                    },
+
+                    new Role()
+                    {
+                        Name = "Place owner"
+                    },
+
+                    new Role()
+                    {
+                        Name = "Administrator"
+                    }
+                };
+            return roles;
         }
     }
 }

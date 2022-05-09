@@ -34,6 +34,7 @@ namespace TripperAPI
             services.AddScoped<DbSeeder>();
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IAccountService, AccountService>();
             services.AddSwaggerGen();
             services.AddControllers();
         }
@@ -53,7 +54,7 @@ namespace TripperAPI
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tripper - API");
+                c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Tripper - API");
             });
 
             app.UseRouting();

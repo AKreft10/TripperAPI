@@ -22,6 +22,8 @@ namespace TripperAPI.Entities
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +31,8 @@ namespace TripperAPI.Entities
             new PhotoConfiguration().Configure(modelBuilder.Entity<Photo>());
             new PlaceConfiguration().Configure(modelBuilder.Entity<Place>());
             new ReviewConfiguration().Configure(modelBuilder.Entity<Review>());
+            new UserConfiguration().Configure(modelBuilder.Entity<User>());
+            new RoleConfiguration().Configure(modelBuilder.Entity<Role>());
             base.OnModelCreating(modelBuilder);
         }
 
