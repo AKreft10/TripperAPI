@@ -9,6 +9,7 @@ using TripperAPI.Services;
 
 namespace TripperAPI.Controllers
 {
+    [ApiController]
     [Route("api/places/{placeId}/reviews")]
     public class ReviewController : ControllerBase
     {

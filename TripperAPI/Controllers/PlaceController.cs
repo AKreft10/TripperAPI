@@ -10,7 +10,8 @@ using TripperAPI.Services;
 
 namespace TripperAPI.Controllers
 {
-    [Route("api/place")]
+    [ApiController]
+    [Route("api/places")]
     public class PlaceController : ControllerBase
     {
         private readonly IPlaceService _service;
