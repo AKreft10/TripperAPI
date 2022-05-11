@@ -88,6 +88,7 @@ namespace TripperAPI
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tripper - API");
+                c.RoutePrefix = "api/swagger";
             });
             app.UseDeveloperExceptionPage();
             app.UseRouting();
