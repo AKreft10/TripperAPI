@@ -13,7 +13,9 @@ namespace TripperAPI.Entities
         #nullable enable
         public string? Content { get; set; }
         #nullable disable
-        public string Author { get; set; }
+        public int? CreatedById { get; set; }
+        [JsonIgnore]
+        public virtual User CreatedBy { get; set; }
         public int Rating { get; set; }
         public DateTime Created { get; set; }
         public List<Photo> Photos { get; set; }

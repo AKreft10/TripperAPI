@@ -12,9 +12,6 @@ namespace TripperAPI.Entities.Configurations
     {
         public void Configure(EntityTypeBuilder<Review> builder)
         {
-            builder.Property(r => r.Author)
-                .IsRequired();
-
             builder.Property(r => r.Rating)
                 .IsRequired();
         }
