@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TripperAPI.Authorization;
 using TripperAPI.Entities;
 using TripperAPI.Middleware.Exceptions;
 using TripperAPI.Models;
@@ -17,15 +20,17 @@ namespace TripperAPI.Services
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<ReviewService> _logger;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ReviewService(DatabaseContext context, IMapper mapper, ILogger<ReviewService> logger)
+        public ReviewService(DatabaseContext context, IMapper mapper, ILogger<ReviewService> logger, IAuthorizationService authorizationService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _authorizationService = authorizationService;
         }
 
-        public async Task AddReviewToPlaceById(int placeId, AddReviewDto dto)
+        public async Task AddReviewToPlaceById(int placeId, AddReviewDto dto, int userId)
         {
             _logger.LogInformation($"Review with id: {placeId} ADD method invoked.");
 
@@ -33,7 +38,7 @@ namespace TripperAPI.Services
             await _context.Reviews.AddAsync(new Review
             {
                 Content = dto.Content,
-                Author = dto.Author,
+                CreatedById = userId,
                 Rating = dto.Rating,
                 Created = DateTime.Now,
                 PlaceId = placeId,
@@ -44,7 +49,7 @@ namespace TripperAPI.Services
                     GalleryMember = false
                 })
                 .ToList()
-            });
+            });;
 
             await _context.SaveChangesAsync();
         }
@@ -62,7 +67,7 @@ namespace TripperAPI.Services
             _context.SaveChanges();
         }
 
-        public async Task EditReviewByReviewId(int reviewId, UpdateReviewDto dto)
+        public async Task EditReviewByReviewId(int reviewId, UpdateReviewDto dto, ClaimsPrincipal user)
         {
             _logger.LogInformation($"Review with id: {reviewId} UPDATE method invoked.");
 
@@ -74,6 +79,14 @@ namespace TripperAPI.Services
                 throw new NotFound("Review not found.. ):");
             }
 
+            var authorizationResult = _authorizationService.AuthorizeAsync(user, review, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
+
+            if(!authorizationResult.Succeeded)
+            {
+                throw new Forbidden("Unauthorized.. ):");
+            }
+
+
             var photos = await
                 _context
                 .Photos
@@ -82,7 +95,6 @@ namespace TripperAPI.Services
 
 
             review.Content = dto.Content;
-            review.Author = dto.Author;
             review.Rating = dto.Rating;
             review.Photos.RemoveAll(r => r.ReviewId == reviewId);
 

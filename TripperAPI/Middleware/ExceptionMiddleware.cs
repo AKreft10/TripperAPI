@@ -16,6 +16,11 @@ namespace TripperAPI.Middleware
             {
                 await next.Invoke(context);
             }
+            catch(Forbidden forbiddenException)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(forbiddenException.Message);
+            }
             catch(BadRequest badRequestException)
             {
                 context.Response.StatusCode = 400;

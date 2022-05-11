@@ -13,6 +13,7 @@ namespace TripperAPI.Controllers
 {
     [ApiController]
     [Route("api/places")]
+    [Authorize]
     public class PlaceController : ControllerBase
     {
         private readonly IPlaceService _service;
@@ -31,6 +32,7 @@ namespace TripperAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<PlaceDto>> GetSinglePlace(int id)
         {
             var place = await _service.GetSinglePlaceById(id);
@@ -38,6 +40,7 @@ namespace TripperAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult<CreatePlaceDto>> CreateNewPlace([FromBody] CreatePlaceDto dto)
         {
             int resultId = await _service.CreateNewPlace(dto);
@@ -45,6 +48,7 @@ namespace TripperAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrator")]
         public async Task<ActionResult> DeletePlaceById(int id)
         {
             await _service.DeleteSinglePlaceById(id);

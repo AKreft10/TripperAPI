@@ -58,7 +58,6 @@ namespace TripperAPI
                     {
                         new Review
                         {
-                            Author = "Saad Achwa",
                             Created = DateTime.Now,
                             Rating = 5,
                             Content = "One of the best places and 100% must visit  place during the season, though you have to be careful of social distancing because Covid19 is high peak once again, may Hid protect all humanity and out loved ones.",
@@ -76,7 +75,6 @@ namespace TripperAPI
 
                         new Review()
                         {
-                            Author = "Katherine Mojica",
                             Created = DateTime.Now,
                             Rating = 5,
                             Content = "One of my favorite places in France. It's breathtaking, the history and every room has so much to tell. You'll need one whole day to really see most of it, because the museum is really big. You must plan to be there for minimum 4 hours.",

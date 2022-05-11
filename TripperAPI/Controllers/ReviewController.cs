@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TripperAPI.Models;
@@ -30,7 +32,8 @@ namespace TripperAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<AddReviewDto>> AddReview(int placeId, [FromBody]AddReviewDto dto)
         {
-            await _service.AddReviewToPlaceById(placeId, dto);
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            await _service.AddReviewToPlaceById(placeId, dto, userId);
             return Ok();
         }
 
@@ -44,7 +47,7 @@ namespace TripperAPI.Controllers
         [HttpPut("{reviewId}")]
         public async Task<ActionResult> UpdateReview(int reviewId, [FromBody]UpdateReviewDto dto)
         {
-            await _service.EditReviewByReviewId(reviewId, dto);
+            await _service.EditReviewByReviewId(reviewId, dto, User);
             return Ok();
         }
 

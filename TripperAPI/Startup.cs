@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TripperAPI.Authorization;
 using TripperAPI.Entities;
 using TripperAPI.Middleware;
 using TripperAPI.Models;
@@ -55,9 +57,9 @@ namespace TripperAPI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authConfiguration.JwtKey)),
                 };
             });
-
             services.AddControllers().AddFluentValidation();
             services.AddAutoMapper(this.GetType().Assembly);
+            services.AddScoped<IAuthorizationHandler, ResourceOperationRequirementHandler>();
             services.AddScoped<ExceptionMiddleware>();
             services.AddDbContext<DatabaseContext>();
             services.AddScoped<DbSeeder>();
@@ -85,9 +87,9 @@ namespace TripperAPI
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "Tripper - API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tripper - API");
             });
-
+            app.UseDeveloperExceptionPage();
             app.UseRouting();
 
             app.UseAuthorization();
