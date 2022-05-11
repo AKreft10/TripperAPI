@@ -68,6 +68,8 @@ namespace TripperAPI
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IValidator<RegisterNewUserDto>, RegisterUserDtoValidator>();
+            services.AddScoped<IUserContextService, UserContextService>();
+            services.AddHttpContextAccessor();
             services.AddSwaggerGen();
             services.AddControllers();
         }
@@ -90,7 +92,6 @@ namespace TripperAPI
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tripper - API");
                 c.RoutePrefix = "api/swagger";
             });
-            app.UseDeveloperExceptionPage();
             app.UseRouting();
 
             app.UseAuthorization();

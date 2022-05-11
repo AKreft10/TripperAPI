@@ -21,24 +21,23 @@ namespace TripperAPI.Services
         private readonly IMapper _mapper;
         private readonly ILogger<ReviewService> _logger;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IUserContextService _userContextService;
 
-        public ReviewService(DatabaseContext context, IMapper mapper, ILogger<ReviewService> logger, IAuthorizationService authorizationService)
+        public ReviewService(DatabaseContext context, IMapper mapper, ILogger<ReviewService> logger, IAuthorizationService authorizationService, IUserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
             _authorizationService = authorizationService;
+            _userContextService = userContextService;
         }
 
-        public async Task AddReviewToPlaceById(int placeId, AddReviewDto dto, int userId)
+        public async Task AddReviewToPlaceById(int placeId, AddReviewDto dto)
         {
-            _logger.LogInformation($"Review with id: {placeId} ADD method invoked.");
-
-
             await _context.Reviews.AddAsync(new Review
             {
                 Content = dto.Content,
-                CreatedById = userId,
+                CreatedById = _userContextService.GetUserId,
                 Rating = dto.Rating,
                 Created = DateTime.Now,
                 PlaceId = placeId,
@@ -52,11 +51,11 @@ namespace TripperAPI.Services
             });;
 
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"New review for place with id: {placeId} has been added by user with id: {_userContextService.GetUserId}");
         }
 
         public async Task DeleteReviewByReviewId(int reviewId)
         {
-            _logger.LogInformation($"Review with id: {reviewId} DELETE method invoked.");
 
             var review = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
 
@@ -65,12 +64,12 @@ namespace TripperAPI.Services
 
             _context.Reviews.Remove(review);
             _context.SaveChanges();
+
+            _logger.LogInformation($"Review with id: {reviewId} has been deleted by user with id: {_userContextService.GetUserId}");
         }
 
-        public async Task EditReviewByReviewId(int reviewId, UpdateReviewDto dto, ClaimsPrincipal user)
+        public async Task EditReviewByReviewId(int reviewId, UpdateReviewDto dto)
         {
-            _logger.LogInformation($"Review with id: {reviewId} UPDATE method invoked.");
-
             var review = await _context.Reviews
                 .FirstOrDefaultAsync(x => x.Id == reviewId);
 
@@ -79,13 +78,12 @@ namespace TripperAPI.Services
                 throw new NotFound("Review not found.. ):");
             }
 
-            var authorizationResult = _authorizationService.AuthorizeAsync(user, review, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
+            var authorizationResult = _authorizationService.AuthorizeAsync(_userContextService.User, review, new ResourceOperationRequirement(ResourceOperation.Update)).Result;
 
             if(!authorizationResult.Succeeded)
             {
                 throw new Forbidden("Unauthorized.. ):");
             }
-
 
             var photos = await
                 _context
@@ -107,6 +105,8 @@ namespace TripperAPI.Services
             .ToList();
 
             _context.SaveChanges();
+
+            _logger.LogInformation($"Review with id: {reviewId} has been updated by user with id: {_userContextService.GetUserId}");
         }
 
         public async Task<List<ReviewDto>> ShowAllReviewsByPlaceId(int placeId)

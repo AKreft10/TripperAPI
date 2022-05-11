@@ -13,6 +13,7 @@ namespace TripperAPI.Controllers
 {
     [ApiController]
     [Route("api/places/{placeId}/reviews")]
+    [Authorize]
     public class ReviewController : ControllerBase
     {
         private readonly IReviewService _service;
@@ -23,6 +24,7 @@ namespace TripperAPI.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<List<ReviewDto>> GetAllReviewsByPlaceId(int placeId)
         {
             var reviews = await _service.ShowAllReviewsByPlaceId(placeId);
@@ -32,8 +34,7 @@ namespace TripperAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<AddReviewDto>> AddReview(int placeId, [FromBody]AddReviewDto dto)
         {
-            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            await _service.AddReviewToPlaceById(placeId, dto, userId);
+            await _service.AddReviewToPlaceById(placeId, dto);
             return Ok();
         }
 
@@ -47,7 +48,7 @@ namespace TripperAPI.Controllers
         [HttpPut("{reviewId}")]
         public async Task<ActionResult> UpdateReview(int reviewId, [FromBody]UpdateReviewDto dto)
         {
-            await _service.EditReviewByReviewId(reviewId, dto, User);
+            await _service.EditReviewByReviewId(reviewId, dto);
             return Ok();
         }
 
