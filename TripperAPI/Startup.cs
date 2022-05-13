@@ -22,6 +22,7 @@ using TripperAPI.Middleware;
 using TripperAPI.Models;
 using TripperAPI.Models.ValidatorModels;
 using TripperAPI.Services;
+using TripperAPI.Services.ApiDataServices;
 
 namespace TripperAPI
 {
@@ -69,6 +70,8 @@ namespace TripperAPI
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IValidator<RegisterNewUserDto>, RegisterUserDtoValidator>();
             services.AddScoped<IUserContextService, UserContextService>();
+            services.AddScoped<IPlaceDistanceService, PlaceDistanceService>();
+            services.AddScoped<IBingMapsDistanceService, BingMapsDistanceService>();
             services.AddHttpContextAccessor();
             services.AddSwaggerGen();
             services.AddControllers();
@@ -85,6 +88,7 @@ namespace TripperAPI
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseDeveloperExceptionPage();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

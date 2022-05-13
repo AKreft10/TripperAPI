@@ -17,10 +17,12 @@ namespace TripperAPI.Controllers
     public class PlaceController : ControllerBase
     {
         private readonly IPlaceService _service;
+        private readonly IPlaceDistanceService _placeDistanceService;
 
-        public PlaceController(IPlaceService service)
+        public PlaceController(IPlaceService service, IPlaceDistanceService placeDistanceService)
         {
             _service = service;
+            _placeDistanceService = placeDistanceService;
         }
 
         [HttpGet]
@@ -59,6 +61,13 @@ namespace TripperAPI.Controllers
         {
             await _service.UpdateSinglePlaceById(id, dto);
             return Ok();
+        }
+
+        [HttpGet("nearby")]
+        public async Task<ActionResult<IList<KeyValuePair<Place, TimeAndDistanceDto>>>> GetPlacesWithDistances([FromBody]CoordinatesDto userCoordinates)
+        {
+            var places = await _placeDistanceService.GetTheNearestPlacesToVisit(userCoordinates);
+            return Ok(places);
         }
     }
 }

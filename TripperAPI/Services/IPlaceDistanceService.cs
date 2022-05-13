@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TripperAPI.Entities;
+using TripperAPI.Models;
 
 namespace TripperAPI.Services
 {
     public interface IPlaceDistanceService
     {
-        IDictionary<string, double> GetTheNearestPlaces();
+        Task<IList<KeyValuePair<PlaceDto, TimeAndDistanceDto>>> GetTheNearestPlacesToVisit(CoordinatesDto userCoordinates);
     }
 }
