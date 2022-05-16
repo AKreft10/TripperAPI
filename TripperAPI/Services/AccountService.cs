@@ -88,12 +88,10 @@ namespace TripperAPI.Services
             var passwordhash = _passwordHasher.HashPassword(user, dto.Password);
             user.PasswordHash = passwordhash;
 
-
-            _logger.LogInformation($"User with email: {user.Email} successfully registered");
-
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation($"User with email: {user.Email} successfully registered");
 
         }
     }
