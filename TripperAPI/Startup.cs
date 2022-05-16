@@ -1,3 +1,4 @@
+using FluentEmail.MailKitSmtp;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
@@ -38,9 +39,32 @@ namespace TripperAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var from = Configuration.GetSection("Email")["From"];
+            var sender = Configuration.GetSection("Gmail")["Sender"];
+            var password = Configuration.GetSection("Gmail")["Password"];
+            var port = Convert.ToInt32(Configuration.GetSection("Gmail")["Port"]);
+            var server = Configuration.GetSection("Gmail")["Server"];
+
+
+            services
+                .AddFluentEmail(sender, from)
+                .AddRazorRenderer()
+                .AddMailKitSender(new SmtpClientOptions
+                {
+                    Server = server,
+                    Port = port,
+                    UseSsl = true,
+                    RequiresAuthentication = true,
+                    User = sender,
+                    Password = password,
+                });
+
+
             var authConfiguration = new AuthConfiguration();
 
             Configuration.GetSection("Authentication").Bind(authConfiguration);
+
             services.AddSingleton(authConfiguration);
             services.AddAuthentication(option =>
             {
@@ -64,6 +88,7 @@ namespace TripperAPI
             services.AddScoped<ExceptionMiddleware>();
             services.AddDbContext<DatabaseContext>();
             services.AddScoped<DbSeeder>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IAccountService, AccountService>();

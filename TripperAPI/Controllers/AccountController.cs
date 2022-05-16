@@ -14,16 +14,19 @@ namespace TripperAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _service;
+        private readonly IEmailService _emailService;
 
-        public AccountController(IAccountService service)
+        public AccountController(IAccountService service, IEmailService emailService)
         {
             _service = service;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
         public ActionResult RegisterNewUser([FromBody] RegisterNewUserDto dto)
         {
             _service.RegisterUser(dto);
+            _emailService.SendEmail(dto.Email);
             return Ok();
         }
 
