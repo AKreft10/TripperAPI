@@ -88,6 +88,8 @@ namespace TripperAPI
             services.AddScoped<ExceptionMiddleware>();
             services.AddDbContext<DatabaseContext>();
             services.AddScoped<DbSeeder>();
+            services.AddScoped<IWeatherService,WeatherService>();
+            services.AddScoped<IOpenWeatherService, OpenWeatherService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IPlaceService, PlaceService>();
             services.AddScoped<IReviewService, ReviewService>();
@@ -100,11 +102,20 @@ namespace TripperAPI
             services.AddHttpContextAccessor();
             services.AddSwaggerGen();
             services.AddControllers();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("BlazorClient", builder =>
+                builder.AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowAnyOrigin()
+                );
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DbSeeder seeder)
         {
+            app.UseCors("BlazorClient");
             seeder.SeedData();
             if (env.IsDevelopment())
             {

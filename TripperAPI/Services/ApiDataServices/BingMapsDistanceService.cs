@@ -10,7 +10,7 @@ using TripperAPI.Models;
 
 namespace TripperAPI.Services.ApiDataServices
 {
-    public class BingMapsDistanceService : IBingMapsDistanceService
+    public class BingMapsDistanceService : ApiDataService, IBingMapsDistanceService
     {
         private readonly IConfiguration _configuration;
 
@@ -22,7 +22,7 @@ namespace TripperAPI.Services.ApiDataServices
         public async Task<TimeAndDistanceDto> GetTimeAndDistance(CoordinatesDto userCoords, CoordinatesDto placeCoords)
         {
             string jsonUrl = GetJsonUrl(userCoords, placeCoords);
-            var apiDataDeserializedContent = await GetDataFromApiAsync(jsonUrl);
+            var apiDataDeserializedContent = await GetDataFromApiAsync<Rootobject>(jsonUrl);
             var resultTimeAndDistance = GetDataFromDeserializedObject(apiDataDeserializedContent);
             return resultTimeAndDistance;
         }
@@ -37,25 +37,6 @@ namespace TripperAPI.Services.ApiDataServices
 
             return timeAndDistance;
         }
-
-        private async Task<Rootobject> GetDataFromApiAsync(string jsonUrl)
-        {
-
-            HttpResponseMessage response = new HttpResponseMessage();
-
-            using (var client = new HttpClient())
-            {
-                response = await client.GetAsync(jsonUrl);
-            }
-
-            string responseContent = await response.Content.ReadAsStringAsync();
-            var deserializedContent = JsonConvert.DeserializeObject<Rootobject>(responseContent);
-
-            return deserializedContent;
-        }
-
-        private string ReplaceCommasWithDots(double valueToEdit) => valueToEdit.ToString().Replace(',', '.');
-
         private string GetJsonUrl(CoordinatesDto userCoords, CoordinatesDto placeCoords)
         {
             var apiKey = _configuration.GetValue<string>("BingMapsKey");
