@@ -124,7 +124,6 @@ namespace TripperAPI
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseDeveloperExceptionPage();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

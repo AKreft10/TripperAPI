@@ -55,13 +55,14 @@ namespace TripperAPI.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<PlaceDto>> GetAll()
+        public async Task<List<PlaceDto>> GetAll(string searchPhrase)
         {
             var places = await _context
                 .Places
                 .Include(a => a.Address)
                 .Include(r => r.Reviews)
                 .ThenInclude(p => p.Photos)
+                .Where(z => searchPhrase == null || (z.Name.ToLower().Contains(searchPhrase.ToLower())|| z.Description.ToLower().Contains(searchPhrase.ToLower())))
                 .ToListAsync();
 
 

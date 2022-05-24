@@ -26,9 +26,9 @@ namespace TripperAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<PlaceDto>>> GetAll()
+        public async Task<ActionResult<List<PlaceDto>>> GetAll([FromQuery]string searchPhrase)
         {
-            var places = await _service.GetAll();
+            var places = await _service.GetAll(searchPhrase);
             return Ok(places);
         }
 
