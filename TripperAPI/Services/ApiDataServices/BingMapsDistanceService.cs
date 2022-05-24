@@ -19,39 +19,47 @@ namespace TripperAPI.Services.ApiDataServices
             _configuration = configuration;
         }
 
-        public async Task<TimeAndDistanceDto> GetTimeAndDistance(CoordinatesDto userCoords, CoordinatesDto placeCoords)
-        {
-            string jsonUrl = GetJsonUrl(userCoords, placeCoords);
-            var apiDataDeserializedContent = await GetDataFromApiAsync<Rootobject>(jsonUrl);
-            var resultTimeAndDistance = GetDataFromDeserializedObject(apiDataDeserializedContent);
-            return resultTimeAndDistance;
-        }
-
-        private static TimeAndDistanceDto GetDataFromDeserializedObject(Rootobject dataContent)
-        {
-            TimeAndDistanceDto timeAndDistance = new TimeAndDistanceDto()
-            {
-                Distance = Math.Round((double)dataContent.resourceSets[0].resources[0].results[0].travelDistance),
-                Minutes = Math.Round((double)dataContent.resourceSets[0].resources[0].results[0].travelDuration)
-            };
-
-            return timeAndDistance;
-        }
-        private string GetJsonUrl(CoordinatesDto userCoords, CoordinatesDto placeCoords)
+        private string GetJsonUrl(CoordinatesDto userCoords, IList<KeyValuePair<PlaceDto, double>> placeList)
         {
             var apiKey = _configuration.GetValue<string>("BingMapsKey");
             var apiUrl = _configuration.GetValue<string>("BingMapsUrl");
+            int iterationCount = 0;
 
-            string lat1 = ReplaceCommasWithDots(placeCoords.Latitude);
-            string lon1 = ReplaceCommasWithDots(placeCoords.Longitude);
+            string jsonUrl = $"{apiUrl}";
 
-            string lat2 = ReplaceCommasWithDots(userCoords.Latitude);
-            string lon2 = ReplaceCommasWithDots(userCoords.Longitude);
+            foreach(var place in placeList)
+            {
+                iterationCount++;
+                jsonUrl += $"{ReplaceCommasWithDots(place.Key.Address.Latitude)},{ReplaceCommasWithDots(place.Key.Address.Longitude)}";
 
-            string jsonUrl = $"{apiUrl}{lat1},{lon1};{lat2},{lon2}&travelMode=driving&key={apiKey}";
+                if (iterationCount != placeList.Count)
+                    jsonUrl += ";";
+            }
+
+            jsonUrl += $"&destinations={ReplaceCommasWithDots(userCoords.Latitude)},{ReplaceCommasWithDots(userCoords.Longitude)}&travelMode=driving&key={apiKey}";
 
             return jsonUrl;
         }
 
+        public async Task<IList<KeyValuePair<PlaceDto, TimeAndDistanceDto>>> GetPlacesWithTimeAndDistance(IList<KeyValuePair<PlaceDto, double>> placeList, CoordinatesDto userCoordinates)
+        {
+            var jsonUrl = GetJsonUrl(userCoordinates, placeList);
+            var apiDataObject = await GetDataFromApiAsync<Rootobject>(jsonUrl);
+
+            List<KeyValuePair<PlaceDto, TimeAndDistanceDto>> placesWithTimeAndDistance = new List<KeyValuePair<PlaceDto, TimeAndDistanceDto>>();
+
+            for (int i = 0; i < placeList.Count; i++)
+            {
+                var timeAndDistance = new TimeAndDistanceDto()
+                {
+                    Distance = Math.Round((double)apiDataObject.resourceSets[0].resources[0].results[i].travelDistance),
+                    Minutes = Math.Round((double)apiDataObject.resourceSets[0].resources[0].results[i].travelDuration)
+                };
+                var placeWithTimeAndDistance = new KeyValuePair<PlaceDto, TimeAndDistanceDto>(placeList[i].Key, timeAndDistance);
+                placesWithTimeAndDistance.Add(placeWithTimeAndDistance);
+            }
+
+            return placesWithTimeAndDistance;
+        }
     }
 }

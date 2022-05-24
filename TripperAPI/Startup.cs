@@ -123,6 +123,7 @@ namespace TripperAPI
             }
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseAuthentication();
+            app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
 
             app.UseSwagger();

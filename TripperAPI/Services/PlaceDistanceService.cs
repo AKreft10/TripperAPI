@@ -28,11 +28,11 @@ namespace TripperAPI.Services
         {
             var places = await GetTenClosestPlacesFromDatabase(userCoordinates);
             var timeAndDistanceList = await GetTimeAndDistanceListBetweenUserAndPlaces(places, userCoordinates);
-            var sortedResult = SortByDistance(timeAndDistanceList);
+            var sortedResult = SortPlacesByDistance(timeAndDistanceList);
             return sortedResult;
         }
 
-        private IList<KeyValuePair<PlaceDto,TimeAndDistanceDto>> SortByDistance(IList<KeyValuePair<PlaceDto, TimeAndDistanceDto>> unorderedList)
+        private IList<KeyValuePair<PlaceDto,TimeAndDistanceDto>> SortPlacesByDistance(IList<KeyValuePair<PlaceDto, TimeAndDistanceDto>> unorderedList)
         {
             IList<KeyValuePair<PlaceDto, TimeAndDistanceDto>> orderedList = unorderedList
                 .OrderBy(x => x.Value.Minutes)
@@ -79,22 +79,9 @@ namespace TripperAPI.Services
 
             return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
         }
-        private async Task<List<KeyValuePair<PlaceDto, TimeAndDistanceDto>>> GetTimeAndDistanceListBetweenUserAndPlaces(IList<KeyValuePair<PlaceDto, double>> placeList, CoordinatesDto userCoordinates)
+        private async Task<IList<KeyValuePair<PlaceDto, TimeAndDistanceDto>>> GetTimeAndDistanceListBetweenUserAndPlaces(IList<KeyValuePair<PlaceDto, double>> placeList, CoordinatesDto userCoordinates)
         {
-            var timeAndDistanceList = new List<KeyValuePair<PlaceDto, TimeAndDistanceDto>>();
-            foreach (var item in placeList)
-            {
-                var placeCoords = new CoordinatesDto()
-                {
-                    Latitude = item.Key.Address.Latitude,
-                    Longitude = item.Key.Address.Longitude
-                };
-
-                var timeAndDistance = await _bingMapsService.GetTimeAndDistance(userCoordinates, placeCoords);
-                var placeWithTimeAndDistance = new KeyValuePair<PlaceDto, TimeAndDistanceDto>(item.Key,timeAndDistance);
-                timeAndDistanceList.Add(placeWithTimeAndDistance);
-            }
-
+            var timeAndDistanceList = await _bingMapsService.GetPlacesWithTimeAndDistance(placeList, userCoordinates);
             return timeAndDistanceList;
         }
     }

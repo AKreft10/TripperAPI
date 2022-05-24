@@ -9,6 +9,6 @@ namespace TripperAPI.Services.ApiDataServices
 {
     public interface IBingMapsDistanceService
     {
-        Task<TimeAndDistanceDto> GetTimeAndDistance(CoordinatesDto userCoords, CoordinatesDto placeCoords);
+        Task<IList<KeyValuePair<PlaceDto,TimeAndDistanceDto>>> GetPlacesWithTimeAndDistance(IList<KeyValuePair<PlaceDto, double>> placeList, CoordinatesDto userCoordinates);
     }
 }
