@@ -46,6 +46,8 @@ namespace TripperAPI.Services
         {
             var allPlaces = await _context.Places
                 .Include(a => a.Address)
+                .Include(a => a.Reviews)
+                .ThenInclude(a => a.Photos)
                 .ToListAsync();
 
             var allPlacesDto = _mapper.Map<List<PlaceDto>>(allPlaces);
