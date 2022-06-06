@@ -55,14 +55,18 @@ namespace TripperAPI.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<PlaceDto>> GetAll(string searchPhrase)
+        public async Task<PagedResult<PlaceDto>> GetAll(QueryParameters query)
         {
-            var places = await _context
+            var baseQuery = _context
                 .Places
                 .Include(a => a.Address)
                 .Include(r => r.Reviews)
                 .ThenInclude(p => p.Photos)
-                .Where(z => searchPhrase == null || (z.Name.ToLower().Contains(searchPhrase.ToLower())|| z.Description.ToLower().Contains(searchPhrase.ToLower())))
+                .Where(z => query.searchPhrase == null || (z.Name.ToLower().Contains(query.searchPhrase.ToLower()) || z.Description.ToLower().Contains(query.searchPhrase.ToLower())));
+
+            var places = await baseQuery
+                .Skip(query.pageSize*(query.pageNumber-1))
+                .Take(query.pageSize)
                 .ToListAsync();
 
 
@@ -72,8 +76,9 @@ namespace TripperAPI.Services
             }
 
             var result = _mapper.Map<List<PlaceDto>>(places);
+            var pagedResult = new PagedResult<PlaceDto>(result,baseQuery.Count(),query.pageSize, query.pageNumber);
 
-            return result;
+            return pagedResult;
         }
 
         public async Task<PlaceDto> GetSinglePlaceById(int id)

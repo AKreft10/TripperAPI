@@ -10,7 +10,7 @@ namespace TripperAPI.Services
 {
     public interface IPlaceService
     {
-        Task<List<PlaceDto>> GetAll(string searchPhrase);
+        Task<PagedResult<PlaceDto>> GetAll(QueryParameters query);
         Task<PlaceDto> GetSinglePlaceById(int id);
         Task<int> CreateNewPlace(CreatePlaceDto dto);
         Task DeleteSinglePlaceById(int id);

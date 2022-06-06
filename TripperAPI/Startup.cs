@@ -96,6 +96,7 @@ namespace TripperAPI
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddScoped<IValidator<RegisterNewUserDto>, RegisterUserDtoValidator>();
+            services.AddScoped<IValidator<QueryParameters>, PlaceQueryValidator>();
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IPlaceDistanceService, PlaceDistanceService>();
             services.AddScoped<IBingMapsDistanceService, BingMapsDistanceService>();
