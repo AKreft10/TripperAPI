@@ -23,10 +23,9 @@ namespace TripperAPI.Controllers
         }
 
         [HttpPost("register")]
-        public ActionResult RegisterNewUser([FromBody] RegisterNewUserDto dto)
+        public async Task<ActionResult> RegisterNewUser([FromBody] RegisterNewUserDto dto)
         {
-            _service.RegisterUser(dto);
-            _emailService.SendEmail(dto.Email);
+            await _service.RegisterUser(dto);
             return Ok();
         }
 
@@ -36,5 +35,14 @@ namespace TripperAPI.Controllers
             string token = _service.GenerateJwt(dto);
             return Ok(token);
         }
+
+        [HttpPost("activate")]
+        public async Task<ActionResult> ActivateAccount(string token)
+        {
+            await _service.ActivateAccount(token);
+            return Ok("User activated successfully!");
+        }
+
+        
     }
 }

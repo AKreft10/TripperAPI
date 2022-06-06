@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TripperAPI.Entities;
 
 namespace TripperAPI.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20220606114546_UserVerification")]
+    partial class UserVerification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,9 +189,6 @@ namespace TripperAPI.Migrations
 
                     b.Property<DateTime?>("VerificationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("VerificationToken")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

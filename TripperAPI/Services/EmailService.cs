@@ -21,16 +21,20 @@ namespace TripperAPI.Services
             _fluentEmail = fluentEmail;
             _configuration = configuration;
         }
-        public async Task SendEmail(string email)
+        public async Task SendEmail(string email, string token)
         {
+            string activateLink = GenerateLinkWithToken(token);
+
             var emailToSend = _fluentEmail
                 .Create()
                 .To(email)
                 .Subject($"Activate your Tripper Account!")
-                .UsingTemplateFromFile($"{Directory.GetCurrentDirectory()}/wwwroot/EmailTemplates/RegisterNewUserEmail.cshtml", new {});
+                .UsingTemplateFromFile($"{Directory.GetCurrentDirectory()}/wwwroot/EmailTemplates/RegisterNewUserEmail.cshtml", new {email,activateLink});
 
 
             await emailToSend.SendAsync();
         }
+
+        private string GenerateLinkWithToken(string token) => $"https://localhost:5001/api/account/activate?token={token}";
     }
 }

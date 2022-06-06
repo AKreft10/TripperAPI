@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TripperAPI.Entities;
@@ -21,13 +22,15 @@ namespace TripperAPI.Services
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly ILogger<AccountService> _logger;
         private readonly AuthConfiguration _authConfiguration;
+        private readonly IEmailService _emailService;
 
-        public AccountService(DatabaseContext context, IPasswordHasher<User> passwordHasher, ILogger<AccountService> logger, AuthConfiguration authConfiguration)
+        public AccountService(DatabaseContext context, IPasswordHasher<User> passwordHasher, ILogger<AccountService> logger, AuthConfiguration authConfiguration, IEmailService emailService)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _logger = logger;
             _authConfiguration = authConfiguration;
+            _emailService = emailService;
         }
 
         public string GenerateJwt(LoginDto dto)
@@ -46,6 +49,11 @@ namespace TripperAPI.Services
             if(result == PasswordVerificationResult.Failed)
             {
                 throw new BadRequest("Invalid username or password");
+            }
+
+            if(user.VerificationDate == null)
+            {
+                throw new BadRequest("Account not activated.");
             }
 
             var claims = new List<Claim>()
@@ -82,7 +90,8 @@ namespace TripperAPI.Services
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Nationality = dto.Nationality,
-                RoleId = dto.RoleId
+                RoleId = dto.RoleId,
+                VerificationToken = GenerateRandomToken()
             };
 
             var passwordhash = _passwordHasher.HashPassword(user, dto.Password);
@@ -91,8 +100,34 @@ namespace TripperAPI.Services
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
+            await _emailService.SendEmail(user.Email, user.VerificationToken);
             _logger.LogInformation($"User with email: {user.Email} successfully registered");
 
+        }
+
+        public async Task ActivateAccount(string token)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
+
+            if(user == null)
+            {
+                throw new BadRequest("Invalid Token");
+            }
+
+            user.VerificationDate = DateTime.Now;
+            await _context.SaveChangesAsync();
+        }
+
+        private string GenerateRandomToken()
+        {
+            var token = new byte[64];
+
+            using(var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(token);
+            }
+
+            return Convert.ToHexString(token); 
         }
     }
 }
