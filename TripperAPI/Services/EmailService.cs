@@ -37,7 +37,7 @@ namespace TripperAPI.Services
 
         public async Task SendPasswordResetEmail(string email, string token)
         {
-            string resetLink = await Task.FromResult(GenerateLinkWithToken(token));
+            string resetLink = await Task.FromResult(GeneratePasswordResetLinkWithToken(token));
 
             var emailToSend = _fluentEmail
                 .Create()
