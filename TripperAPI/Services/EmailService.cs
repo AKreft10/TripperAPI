@@ -1,5 +1,6 @@
 ﻿using FluentEmail.Core;
 using FluentEmail.Razor;
+using FluentEmail.SendGrid;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -23,16 +24,24 @@ namespace TripperAPI.Services
         }
         public async Task SendEmail(string email, string token)
         {
-            string activateLink = GenerateLinkWithToken(token);
+            string activateLink = await Task.FromResult(GenerateLinkWithToken(token));
 
             var emailToSend = _fluentEmail
-                .Create()
-                .To(email)
-                .Subject($"Activate your Tripper Account!")
-                .UsingTemplateFromFile($"{Directory.GetCurrentDirectory()}/wwwroot/EmailTemplates/RegisterNewUserEmail.cshtml", new {email,activateLink});
+            .Create()
+            .To(email)
+            .Subject($"Activate your Tripper Account!")
+            .UsingTemplateFromFile($"{Directory.GetCurrentDirectory()}/wwwroot/EmailTemplates/RegisterNewUserEmail.cshtml", new { activateLink });
 
+            var result = await emailToSend.SendAsync();
 
-            await emailToSend.SendAsync();
+            foreach(var item in result.ErrorMessages)
+            {
+                Console.WriteLine(item);
+            }
+
+           
+
+            
         }
 
         private string GenerateLinkWithToken(string token) => $"https://localhost:5001/api/account/activate?token={token}";

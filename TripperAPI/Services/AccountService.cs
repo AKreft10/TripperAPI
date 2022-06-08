@@ -101,6 +101,7 @@ namespace TripperAPI.Services
             await _context.SaveChangesAsync();
 
             await _emailService.SendEmail(user.Email, user.VerificationToken);
+
             _logger.LogInformation($"User with email: {user.Email} successfully registered");
 
         }

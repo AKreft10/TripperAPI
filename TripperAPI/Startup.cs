@@ -39,12 +39,13 @@ namespace TripperAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string provider = "Gmail";
 
-            var from = Configuration.GetSection("Email")["From"];
-            var sender = Configuration.GetSection("Gmail")["Sender"];
-            var password = Configuration.GetSection("Gmail")["Password"];
-            var port = Convert.ToInt32(Configuration.GetSection("Gmail")["Port"]);
-            var server = Configuration.GetSection("Gmail")["Server"];
+            var from = Configuration.GetSection(provider)["From"];
+            var sender = Configuration.GetSection(provider)["Sender"];
+            var password = Configuration.GetSection(provider)["Password"];
+            var port = Convert.ToInt32(Configuration.GetSection(provider)["Port"]);
+            var server = Configuration.GetSection(provider)["Server"];
 
 
             services

@@ -14,12 +14,10 @@ namespace TripperAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _service;
-        private readonly IEmailService _emailService;
 
-        public AccountController(IAccountService service, IEmailService emailService)
+        public AccountController(IAccountService service)
         {
             _service = service;
-            _emailService = emailService;
         }
 
         [HttpPost("register")]
