@@ -8,6 +8,8 @@ namespace TripperAPI.Services
 {
     public interface IEmailService
     {
-        Task SendEmail(string email, string token);
+        Task SendAccountActivationEmail(string email, string token);
+        Task SendPasswordResetEmail(string email, string token);
+
     }
 }

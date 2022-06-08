@@ -17,8 +17,10 @@ namespace TripperAPI.Entities
         public string Nationality { get; set; }
         #nullable enable
         public string? VerificationToken { get; set; }
-        #nullable disable
         public DateTime? VerificationDate { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpires { get; set; }
+        #nullable disable
 
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }

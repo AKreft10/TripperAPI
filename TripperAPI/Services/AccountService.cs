@@ -100,7 +100,7 @@ namespace TripperAPI.Services
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            await _emailService.SendEmail(user.Email, user.VerificationToken);
+            await _emailService.SendAccountActivationEmail(user.Email, user.VerificationToken);
 
             _logger.LogInformation($"User with email: {user.Email} successfully registered");
 
@@ -119,16 +119,53 @@ namespace TripperAPI.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task ForgetPassword(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+            if(user == null)
+            {
+                throw new BadRequest("Wrong email address.");
+            }
+
+            user.PasswordResetToken = GenerateRandomToken();
+            user.PasswordResetTokenExpires = DateTime.Now.AddMinutes(30);
+
+            await _context.SaveChangesAsync();
+
+            await _emailService.SendPasswordResetEmail(email, user.PasswordResetToken);
+        }
+
         private string GenerateRandomToken()
         {
             var token = new byte[64];
 
-            using(var rng = new RNGCryptoServiceProvider())
+            using (var rng = new RNGCryptoServiceProvider())
             {
                 rng.GetBytes(token);
             }
 
-            return Convert.ToHexString(token); 
+            return Convert.ToHexString(token);
+        }
+
+        public async Task ResetPassword(string token, ResetPasswordDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(t => t.PasswordResetToken == token);
+            
+            if(user.PasswordResetTokenExpires<DateTime.Now)
+            {
+                user.PasswordResetTokenExpires = null;
+                user.PasswordResetToken = null;
+                throw new BadRequest("Invalid token");
+            }
+
+            var newPassword = _passwordHasher.HashPassword(user, dto.Password);
+            user.PasswordHash = newPassword;
+
+            user.PasswordResetTokenExpires = null;
+            user.PasswordResetToken = null;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

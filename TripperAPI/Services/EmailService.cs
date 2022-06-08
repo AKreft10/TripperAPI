@@ -22,7 +22,7 @@ namespace TripperAPI.Services
             _fluentEmail = fluentEmail;
             _configuration = configuration;
         }
-        public async Task SendEmail(string email, string token)
+        public async Task SendAccountActivationEmail(string email, string token)
         {
             string activateLink = await Task.FromResult(GenerateLinkWithToken(token));
 
@@ -32,18 +32,23 @@ namespace TripperAPI.Services
             .Subject($"Activate your Tripper Account!")
             .UsingTemplateFromFile($"{Directory.GetCurrentDirectory()}/wwwroot/EmailTemplates/RegisterNewUserEmail.cshtml", new { activateLink });
 
-            var result = await emailToSend.SendAsync();
+            var result = await emailToSend.SendAsync();  
+        }
 
-            foreach(var item in result.ErrorMessages)
-            {
-                Console.WriteLine(item);
-            }
+        public async Task SendPasswordResetEmail(string email, string token)
+        {
+            string resetLink = await Task.FromResult(GenerateLinkWithToken(token));
 
-           
+            var emailToSend = _fluentEmail
+                .Create()
+                .To(email)
+                .Subject($"Tripper password reset")
+                .Body(token);
 
-            
+            await emailToSend.SendAsync();
         }
 
         private string GenerateLinkWithToken(string token) => $"https://localhost:5001/api/account/activate?token={token}";
+        private string GeneratePasswordResetLinkWithToken(string token) => $"https://localhost:5001/api/account/password-reset?token={token}";
     }
 }

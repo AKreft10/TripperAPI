@@ -41,6 +41,25 @@ namespace TripperAPI.Controllers
             return Ok("User activated successfully!");
         }
 
+        [HttpGet("forget-password")]
+        public async Task<ActionResult> ForgetPassword(string email)
+        {
+            await _service.ForgetPassword(email);
+            return Ok("Email with password reset has been send!");
+        }
+
+        [HttpGet("reset-password")]
+        public ActionResult ResetPassword(string token)
+        {
+            return Ok("Enter new password");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<ActionResult> ResetPassword(string token, [FromBody]ResetPasswordDto dto)
+        {
+            await _service.ResetPassword(token, dto);
+            return Ok("Your password has been changed!");
+        }
         
     }
 }

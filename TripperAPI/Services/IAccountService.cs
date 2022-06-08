@@ -12,5 +12,7 @@ namespace TripperAPI.Services
         Task RegisterUser(RegisterNewUserDto dto);
         string GenerateJwt(LoginDto dto);
         Task ActivateAccount(string token);
+        Task ForgetPassword(string email);
+        Task ResetPassword(string token, ResetPasswordDto dto);
     }
 }
