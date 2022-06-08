@@ -102,7 +102,7 @@ namespace TripperAPI.Services
 
             await _emailService.SendAccountActivationEmail(user.Email, user.VerificationToken);
 
-            _logger.LogInformation($"User with email: {user.Email} successfully registered");
+            _logger.LogInformation($"User with email: {user.Email} successfully registered.");
 
         }
 
@@ -117,6 +117,8 @@ namespace TripperAPI.Services
 
             user.VerificationDate = DateTime.Now;
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"User with email: {user.Email} successfully activated his account.");
         }
 
         public async Task ForgetPassword(string email)
@@ -134,6 +136,8 @@ namespace TripperAPI.Services
             await _context.SaveChangesAsync();
 
             await _emailService.SendPasswordResetEmail(email, user.PasswordResetToken);
+
+            _logger.LogInformation($"Reset password process for user with email: {user.Email} has been started.");
         }
 
         private string GenerateRandomToken()
@@ -166,6 +170,8 @@ namespace TripperAPI.Services
             user.PasswordResetToken = null;
 
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation($"User with email: {user.Email} succesfully reset password");
         }
     }
 }
