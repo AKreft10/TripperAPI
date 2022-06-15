@@ -38,10 +38,3 @@ To run this application, change the credentials in `appsettings.development.json
 `Gmail`
 `ConnectionStrings`
 It is possible to deploy the app on any server, or run it locally. 
-## Installation
-To run this application, change the credentials in `appsettings.development.json`, variables to change are:
-`BingMapsKey`
-`WeatherApiKey`
-`Gmail`
-`ConnectionStrings`
-It is possible to deploy the app on any server, or run it locally. 
