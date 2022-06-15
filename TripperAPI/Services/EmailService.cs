@@ -43,12 +43,12 @@ namespace TripperAPI.Services
                 .Create()
                 .To(email)
                 .Subject($"Tripper password reset")
-                .Body(token);
+                .UsingTemplateFromFile($"{Directory.GetCurrentDirectory()}/wwwroot/EmailTemplates/ResetPasswordEmail.cshtml", new { resetLink });
 
             await emailToSend.SendAsync();
         }
 
         private string GenerateLinkWithToken(string token) => $"https://localhost:5001/api/account/activate?token={token}";
-        private string GeneratePasswordResetLinkWithToken(string token) => $"https://localhost:5001/api/account/password-reset?token={token}";
+        private string GeneratePasswordResetLinkWithToken(string token) => $"https://localhost:5001/api/account/reset-password?token={token}";
     }
 }
