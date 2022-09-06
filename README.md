@@ -1,14 +1,10 @@
 
 # Tripper Web API
 
-Tripper is an application that enables the user to discover new interesting places
-around him. By using the application, the customer can quickly and efficiently while in a new place
-check interesting things to do in his actual area, how quickly he can get to these places (both on foot and by car), and
-what is the weather in these places at the moment.
+Tripper is an application that allows the user to discover new interesting places
+around him. By using the application, the customer can quickly check interesting things to do in his actual area, how quickly he can get to these places (both on foot and by car), and what is the weather in these places at the moment.
 
  The application also allows to add new places by owners or local guides. Each user can review a visited place, add some photos and rate it.
-
-
 
 
 ## Technologies
