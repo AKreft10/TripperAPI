@@ -28,6 +28,9 @@ what is the weather in these places at the moment.
 - Authorization by role
 - Error handling/logging
 - Sending confirmation/password reset emails
+- Checking worth visiting places around user
+- Calculating travel time based on current road situation (traffic, car accidents etc)
+- Checking the weather near place of destination
 
 ## API documentation
 The API documentation is available at `~api/swagger`
